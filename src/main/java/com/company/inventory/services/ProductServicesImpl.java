@@ -216,4 +216,56 @@ public class ProductServicesImpl implements IProductService{
 		return new ResponseEntity<ProductResponseRest>(response,HttpStatus.OK);
 	}
 
+	@Override
+	@Transactional
+	public ResponseEntity<ProductResponseRest> update(Product product, Long categoryId, Long id) {
+		ProductResponseRest response = new ProductResponseRest();
+		List<Product> list = new ArrayList<>();
+		
+		try {
+			
+			Optional<Category> category = categoryDao.findById(categoryId);
+			
+			if(category.isPresent())
+			{
+				product.setCategory(category.get());
+				Optional<Product> productoBusqueda = productDao.findById(id);
+				productoBusqueda.get().setName(product.getName());
+				productoBusqueda.get().setPrice(product.getPrice());
+				productoBusqueda.get().setStock(product.getStock());
+				productoBusqueda.get().setCategory(product.getCategory());
+				productoBusqueda.get().setPicture(product.getPicture());
+				
+				Product productUpdate = productDao.save(productoBusqueda.get());
+				
+				if(productUpdate != null)
+				{
+					list.add(productUpdate);
+					response.getProductResponse().setProduct(list);
+					response.setMetadata("Respuesta Ok", "00", "Producto actualizado correctamente");
+				}
+				else
+				{
+					response.setMetadata("Respuesta Nok", "-1", "Lo sentimos pero ocurrio un error al actualizar el producto");
+					return new ResponseEntity<ProductResponseRest>(response,HttpStatus.NOT_FOUND);
+				}
+				
+				
+			}
+			else
+			{
+				response.setMetadata("Respuesta Nok", "-1", "Lo sentimos pero la categoria seleccionada no se encuentra registrada en el sistema");
+				return new ResponseEntity<ProductResponseRest>(response,HttpStatus.BAD_REQUEST);
+			}
+			
+		}catch(Exception e)
+		{
+			response.setMetadata("Respuesta Nok", "-1", "Upps ha ocurrido un error inesperado");
+			return new ResponseEntity<ProductResponseRest>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		
+		return new ResponseEntity<ProductResponseRest>(response,HttpStatus.OK);
+	}
+
 }
