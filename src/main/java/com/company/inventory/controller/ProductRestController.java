@@ -79,7 +79,7 @@ public class ProductRestController {
 													  @RequestParam("name") String name,
 													  @RequestParam("price") int price,
 													  @RequestParam("stock") int stock,
-													  @RequestParam("categoryId") Long categoeyId,
+													  @RequestParam("categoryId") Long categoryId,
 													  @PathVariable Long id) throws IOException
 	{
 		Product product = new Product();
@@ -88,7 +88,7 @@ public class ProductRestController {
 		product.setStock(stock);
 		product.setPicture(Util.compressZLib(picture.getBytes()));
 		
-		ResponseEntity<ProductResponseRest> response = productService.update(product, categoeyId, id);
+		ResponseEntity<ProductResponseRest> response = productService.update(product, categoryId, id);
 		return response;
 	}
 	
